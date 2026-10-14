@@ -58,10 +58,11 @@ public class GameManager : MonoBehaviour
     Transform popupRoot;
     Transform[] clouds;
 
-    static readonly Color Ink = new Color(0.325f, 0.325f, 0.325f, 1f);
+    static readonly Color Ink = new Color(0.2f, 0.16f, 0.28f, 1f);
     static readonly Color Muted = new Color(0.48f, 0.48f, 0.48f, 1f);
-    static readonly Color Gold = new Color(0.86f, 0.62f, 0.08f, 1f);
-    static readonly Color Cyan = new Color(0.2f, 0.75f, 0.95f, 1f);
+    static readonly Color Gold = new Color(1f, 0.8f, 0.18f, 1f);
+    static readonly Color Bone = new Color(0.96f, 0.93f, 0.84f, 1f);
+    static readonly Color Cyan = new Color(0.35f, 0.9f, 1f, 1f);
 
     public static void Ensure()
     {
@@ -82,9 +83,7 @@ public class GameManager : MonoBehaviour
 
         Instance = this;
         highScore = PlayerPrefs.GetInt(HighScoreKey, 0);
-        font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        if (font == null)
-            font = Font.CreateDynamicFontFromOSFont("Arial", 32);
+        font = PixelFont.Get();
 
         cam = Camera.main;
         if (cam != null)
@@ -305,9 +304,9 @@ public class GameManager : MonoBehaviour
             flashImage.color = new Color(1f, 1f, 1f, 0f);
 
         gameOverHeadline.text = isRecord ? "¡NUEVO RÉCORD!" : "¡Chocaste!";
-        gameOverHeadline.color = isRecord ? Gold : Ink;
+        gameOverHeadline.color = isRecord ? Gold : Bone;
         gameOverScore.text = finalScore.ToString("D5");
-        gameOverScore.color = isRecord ? Gold : Ink;
+        gameOverScore.color = isRecord ? Gold : Bone;
         gameOverRecord.text = highScore.ToString("D5");
 
         gameOverCanvas.SetActive(true);
@@ -484,15 +483,16 @@ public class GameManager : MonoBehaviour
 
         TextMesh mesh = go.AddComponent<TextMesh>();
         mesh.text = message;
-        mesh.font = font;
-        mesh.fontSize = 64;
-        mesh.characterSize = 0.1f;
+        mesh.font = PixelFont.Get();
+        mesh.fontSize = 48;
+        mesh.characterSize = 0.12f;
         mesh.anchor = TextAnchor.MiddleCenter;
         mesh.alignment = TextAlignment.Center;
         mesh.color = color;
+        PixelFont.Prepare(message, 48);
         MeshRenderer renderer = go.GetComponent<MeshRenderer>();
         renderer.sortingOrder = 30;
-        if (font.material != null)
+        if (font != null && font.material != null)
             renderer.material = font.material;
 
         StartCoroutine(PopupRoutine(mesh));
@@ -570,53 +570,61 @@ public class GameManager : MonoBehaviour
         Canvas canvas = CreateCanvas("GameOverCanvas", 40);
         gameOverCanvas = canvas.gameObject;
 
-        Image overlay = CreateImage(canvas.transform, new Color(0.05f, 0.06f, 0.08f, 0.55f), "Overlay");
+        Image overlay = CreateImage(canvas.transform, new Color(0.05f, 0.03f, 0.1f, 0.72f), "Overlay");
         Stretch(overlay.rectTransform);
 
-        Image border = CreateImage(canvas.transform, Ink, "Border");
-        Place(border.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(712f, 548f));
-
         Image panel = CreateImage(canvas.transform, Color.white, "Panel");
-        Place(panel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(700f, 536f));
+        Place(panel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(760f, 560f));
+        PixelFont.Frame(panel);
         gameOverPanel = panel.rectTransform;
 
-        Image stripe = CreateImage(panel.transform, Ink, "Stripe");
-        Place(stripe.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -8f), new Vector2(700f, 16f));
+        Text title = CreateText(panel.transform, "GAME OVER", 56, new Color(1f, 0.42f, 0.28f, 1f), FontStyle.Normal, TextAnchor.MiddleCenter);
+        Place(title.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 196f), new Vector2(680f, 78f));
+        AddHardShadow(title);
 
-        Text title = CreateText(panel.transform, "GAME OVER", 64, Ink, FontStyle.Bold, TextAnchor.MiddleCenter);
-        Place(title.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 176f), new Vector2(640f, 80f));
+        gameOverHeadline = CreateText(panel.transform, "", 24, Gold, FontStyle.Normal, TextAnchor.MiddleCenter);
+        Place(gameOverHeadline.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 132f), new Vector2(680f, 40f));
 
-        gameOverHeadline = CreateText(panel.transform, "", 26, Muted, FontStyle.Bold, TextAnchor.MiddleCenter);
-        Place(gameOverHeadline.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 116f), new Vector2(640f, 40f));
+        Image pointsBox = CreateImage(panel.transform, new Color(0.07f, 0.05f, 0.12f, 1f), "PointsBox");
+        Place(pointsBox.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-160f, 42f), new Vector2(250f, 120f));
+        Image recordBox = CreateImage(panel.transform, new Color(0.07f, 0.05f, 0.12f, 1f), "RecordBox");
+        Place(recordBox.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(160f, 42f), new Vector2(250f, 120f));
 
-        Text pointsLabel = CreateText(panel.transform, "PUNTOS", 18, Muted, FontStyle.Bold, TextAnchor.MiddleCenter);
-        Place(pointsLabel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-140f, 62f), new Vector2(220f, 28f));
+        Text pointsLabel = CreateText(panel.transform, "PUNTOS", 18, Gold, FontStyle.Normal, TextAnchor.MiddleCenter);
+        Place(pointsLabel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-160f, 72f), new Vector2(220f, 30f));
 
-        gameOverScore = CreateText(panel.transform, "00000", 48, Ink, FontStyle.Bold, TextAnchor.MiddleCenter);
-        Place(gameOverScore.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-140f, 18f), new Vector2(240f, 60f));
+        gameOverScore = CreateText(panel.transform, "00000", 40, Bone, FontStyle.Normal, TextAnchor.MiddleCenter);
+        Place(gameOverScore.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-160f, 22f), new Vector2(230f, 56f));
 
-        Text recordLabel = CreateText(panel.transform, "RÉCORD", 18, Muted, FontStyle.Bold, TextAnchor.MiddleCenter);
-        Place(recordLabel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(140f, 62f), new Vector2(220f, 28f));
+        Text recordLabel = CreateText(panel.transform, "RÉCORD", 18, Gold, FontStyle.Normal, TextAnchor.MiddleCenter);
+        Place(recordLabel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(160f, 72f), new Vector2(220f, 30f));
 
-        gameOverRecord = CreateText(panel.transform, "00000", 48, Muted, FontStyle.Bold, TextAnchor.MiddleCenter);
-        Place(gameOverRecord.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(140f, 18f), new Vector2(240f, 60f));
+        gameOverRecord = CreateText(panel.transform, "00000", 40, Bone, FontStyle.Normal, TextAnchor.MiddleCenter);
+        Place(gameOverRecord.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(160f, 22f), new Vector2(230f, 56f));
 
         Text help = CreateText(
             panel.transform,
-            "ESPACIO salta. En el aire, ESPACIO otra vez: doble salto.\nEstrellas +100   ·   orbe azul: escudo   ·   pasar cerca suma puntos.",
-            20,
-            Muted,
+            "ESPACIO salta. En el aire, otra vez: doble salto.\nEstrellas +100    orbe azul: escudo    pasar cerca suma.",
+            16,
+            Bone,
             FontStyle.Normal,
             TextAnchor.MiddleCenter);
-        Place(help.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -78f), new Vector2(620f, 90f));
+        Place(help.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -70f), new Vector2(680f, 70f));
 
         Button button = CreateButton(panel.transform, "REINTENTAR", Restart);
-        Place(button.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -168f), new Vector2(320f, 64f));
+        Place(button.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -168f), new Vector2(360f, 72f));
 
-        Text spaceHint = CreateText(panel.transform, "o apretá ESPACIO", 18, Muted, FontStyle.Normal, TextAnchor.MiddleCenter);
-        Place(spaceHint.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -220f), new Vector2(320f, 30f));
+        Text spaceHint = CreateText(panel.transform, "o apretá ESPACIO", 16, Gold, FontStyle.Normal, TextAnchor.MiddleCenter);
+        Place(spaceHint.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -230f), new Vector2(420f, 32f));
 
         gameOverCanvas.SetActive(false);
+    }
+
+    static void AddHardShadow(Text text)
+    {
+        Shadow shadow = text.gameObject.AddComponent<Shadow>();
+        shadow.effectColor = new Color(0.05f, 0.02f, 0.08f, 1f);
+        shadow.effectDistance = new Vector2(4f, -4f);
     }
 
     Canvas CreateCanvas(string name, int sortOrder)
@@ -653,34 +661,37 @@ public class GameManager : MonoBehaviour
         text.text = content;
         text.fontSize = size;
         text.color = color;
-        text.fontStyle = style;
+        text.fontStyle = FontStyle.Normal;
         text.alignment = alignment;
         text.horizontalOverflow = HorizontalWrapMode.Wrap;
         text.verticalOverflow = VerticalWrapMode.Overflow;
         text.raycastTarget = false;
+        text.lineSpacing = 1.05f;
+        PixelFont.Apply(text);
         return text;
     }
 
     Button CreateButton(Transform parent, string label, UnityEngine.Events.UnityAction onClick)
     {
         Image image = CreateImage(parent, Color.white, "RestartButton");
+        PixelFont.ButtonFace(image);
         Button button = image.gameObject.AddComponent<Button>();
         button.targetGraphic = image;
         button.onClick.AddListener(onClick);
 
         ColorBlock colors = button.colors;
-        colors.normalColor = Ink;
-        colors.highlightedColor = new Color(0.18f, 0.18f, 0.18f, 1f);
-        colors.pressedColor = new Color(0.08f, 0.08f, 0.08f, 1f);
-        colors.selectedColor = Ink;
-        colors.fadeDuration = 0.08f;
+        colors.normalColor = Color.white;
+        colors.highlightedColor = new Color(1f, 0.92f, 0.55f, 1f);
+        colors.pressedColor = new Color(0.75f, 0.58f, 0.1f, 1f);
+        colors.selectedColor = Color.white;
+        colors.fadeDuration = 0.05f;
         button.colors = colors;
 
         Navigation navigation = button.navigation;
         navigation.mode = Navigation.Mode.None;
         button.navigation = navigation;
 
-        Text text = CreateText(image.transform, label, 26, Color.white, FontStyle.Bold, TextAnchor.MiddleCenter);
+        Text text = CreateText(image.transform, label, 24, new Color(0.12f, 0.07f, 0.16f, 1f), FontStyle.Normal, TextAnchor.MiddleCenter);
         Stretch(text.rectTransform);
         return button;
     }

@@ -5,9 +5,9 @@ using UnityEngine.UI;
 // Menú de presentación. Se arma solo al dar Play y frena la carrera hasta que eligen jugar.
 public class MainMenu : MonoBehaviour
 {
-    static readonly Color Ink = new Color(0.325f, 0.325f, 0.325f, 1f);
-    static readonly Color Muted = new Color(0.48f, 0.48f, 0.48f, 1f);
-    static readonly Color Gold = new Color(0.86f, 0.62f, 0.08f, 1f);
+    static readonly Color Bone = new Color(0.96f, 0.93f, 0.84f, 1f);
+    static readonly Color Gold = new Color(1f, 0.8f, 0.18f, 1f);
+    static readonly Color Ink = new Color(0.12f, 0.07f, 0.16f, 1f);
 
     GameObject canvasObject;
     Font font;
@@ -17,13 +17,12 @@ public class MainMenu : MonoBehaviour
     Image orbIcon;
     Vector2 starBase;
     Vector2 orbBase;
+    Text spaceHint;
     bool closed;
 
     void Awake()
     {
-        font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-        if (font == null)
-            font = Font.CreateDynamicFontFromOSFont("Arial", 32);
+        font = PixelFont.Get();
 
         Build();
         StartCoroutine(PlayIntro());
@@ -49,8 +48,16 @@ public class MainMenu : MonoBehaviour
 
         if (buttonRect != null)
         {
-            float pulse = 1f + Mathf.Sin(time * 3f) * 0.025f;
+            float pulse = 1f + Mathf.Sin(time * 3f) * 0.03f;
             buttonRect.localScale = new Vector3(pulse, pulse, 1f);
+        }
+
+        if (spaceHint != null)
+        {
+            float blink = Mathf.PingPong(time * 1.6f, 1f) > 0.35f ? 1f : 0.25f;
+            Color color = Gold;
+            color.a = blink;
+            spaceHint.color = color;
         }
     }
 
@@ -89,54 +96,45 @@ public class MainMenu : MonoBehaviour
         Canvas canvas = CreateCanvas("MainMenuCanvas", 80);
         canvasObject = canvas.gameObject;
 
-        Image overlay = CreateImage(canvas.transform, new Color(0.10f, 0.16f, 0.24f, 0.38f), "Overlay");
+        Image overlay = CreateImage(canvas.transform, new Color(0.05f, 0.03f, 0.1f, 0.45f), "Overlay");
         Stretch(overlay.rectTransform);
 
-        Image border = CreateImage(canvas.transform, Ink, "Border");
-        Place(border.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(120f, 8f), new Vector2(836f, 688f));
-
         Image panel = CreateImage(canvas.transform, Color.white, "Panel");
-        Place(panel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(120f, 8f), new Vector2(820f, 672f));
+        Place(panel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(120f, 8f), new Vector2(840f, 700f));
+        PixelFont.Frame(panel);
 
-        Image stripe = CreateImage(panel.transform, Ink, "Stripe");
-        Place(stripe.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, 0f), new Vector2(820f, 14f));
-
-        Text kicker = CreateText(panel.transform, "PRESENTACIÓN", 18, Gold, FontStyle.Bold, TextAnchor.MiddleCenter);
+        Text kicker = CreateText(panel.transform, "LISTO PARA CORRER", 16, Gold, TextAnchor.MiddleCenter);
         Place(kicker.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 286f), new Vector2(700f, 28f));
 
-        Text title = CreateText(panel.transform, "DINO RUSH", 68, Ink, FontStyle.Bold, TextAnchor.MiddleCenter);
-        Place(title.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 214f), new Vector2(560f, 80f));
+        Text title = CreateText(panel.transform, "DINO RUSH", 64, Gold, TextAnchor.MiddleCenter);
+        Place(title.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 214f), new Vector2(560f, 84f));
         titleRect = title.rectTransform;
+        AddHardShadow(title);
 
         starIcon = CreateIcon(panel.transform, GameSprites.Star, new Vector2(-330f, 214f));
         orbIcon = CreateIcon(panel.transform, GameSprites.Orb, new Vector2(330f, 214f));
 
-        Text lead = CreateText(panel.transform, "El desierto no frena. Vos tampoco.", 24, Ink, FontStyle.Bold, TextAnchor.MiddleCenter);
-        Place(lead.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 140f), new Vector2(720f, 36f));
+        Text lead = CreateText(panel.transform, "El desierto no frena. Vos tampoco.", 22, Bone, TextAnchor.MiddleCenter);
+        Place(lead.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 140f), new Vector2(740f, 40f));
 
         Text story = CreateText(
             panel.transform,
             "Un dinosaurio sale a correr y el suelo no para.\nLos cactus crecen en el camino y los pterodáctilos cruzan el cielo.\nLlegá más lejos que tu propio récord.",
-            22,
-            Muted,
-            FontStyle.Normal,
+            16,
+            Bone,
             TextAnchor.MiddleCenter);
-        Place(story.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 48f), new Vector2(720f, 100f));
+        Place(story.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 52f), new Vector2(740f, 100f));
 
-        Image divider = CreateImage(panel.transform, new Color(0.85f, 0.85f, 0.85f, 1f), "Divider");
-        Place(divider.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -16f), new Vector2(640f, 2f));
-
-        Text how = CreateText(panel.transform, "CÓMO SE JUEGA", 18, Gold, FontStyle.Bold, TextAnchor.MiddleCenter);
-        Place(how.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -48f), new Vector2(700f, 28f));
+        Text how = CreateText(panel.transform, "CÓMO SE JUEGA", 16, Gold, TextAnchor.MiddleCenter);
+        Place(how.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -20f), new Vector2(700f, 28f));
 
         Text controls = CreateText(
             panel.transform,
             "ESPACIO salta. En el aire, ESPACIO otra vez: doble salto.\nEstrellas: +100 puntos.    Orbe azul: un escudo.\nPasar muy cerca de un obstáculo también suma.",
-            20,
-            Muted,
-            FontStyle.Normal,
+            16,
+            Bone,
             TextAnchor.MiddleCenter);
-        Place(controls.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -118f), new Vector2(720f, 90f));
+        Place(controls.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -92f), new Vector2(740f, 96f));
         starBase = starIcon.rectTransform.anchoredPosition;
         orbBase = orbIcon.rectTransform.anchoredPosition;
 
@@ -144,8 +142,8 @@ public class MainMenu : MonoBehaviour
         string recordLine = record > 0
             ? "TU RÉCORD  " + record.ToString("D5")
             : "TODAVÍA NO HAY RÉCORD";
-        Text recordText = CreateText(panel.transform, recordLine, 18, Muted, FontStyle.Bold, TextAnchor.MiddleCenter);
-        Place(recordText.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -176f), new Vector2(700f, 28f));
+        Text recordText = CreateText(panel.transform, recordLine, 16, Gold, TextAnchor.MiddleCenter);
+        Place(recordText.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -168f), new Vector2(700f, 30f));
 
         Button button = CreateButton(panel.transform, "JUGAR", () =>
         {
@@ -153,10 +151,10 @@ public class MainMenu : MonoBehaviour
                 GameManager.Instance.StartRun();
         });
         buttonRect = button.GetComponent<RectTransform>();
-        Place(buttonRect, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -240f), new Vector2(320f, 64f));
+        Place(buttonRect, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -236f), new Vector2(340f, 72f));
 
-        Text spaceHint = CreateText(panel.transform, "o apretá ESPACIO para salir a correr", 18, Muted, FontStyle.Normal, TextAnchor.MiddleCenter);
-        Place(spaceHint.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -300f), new Vector2(520f, 28f));
+        spaceHint = CreateText(panel.transform, "APRETÁ ESPACIO", 16, Gold, TextAnchor.MiddleCenter);
+        Place(spaceHint.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -300f), new Vector2(520f, 32f));
     }
 
     Image CreateIcon(Transform parent, Sprite sprite, Vector2 position)
@@ -193,7 +191,7 @@ public class MainMenu : MonoBehaviour
         return image;
     }
 
-    Text CreateText(Transform parent, string content, int size, Color color, FontStyle style, TextAnchor alignment)
+    Text CreateText(Transform parent, string content, int size, Color color, TextAnchor alignment)
     {
         GameObject go = new GameObject("Text", typeof(RectTransform));
         go.transform.SetParent(parent, false);
@@ -202,36 +200,45 @@ public class MainMenu : MonoBehaviour
         text.text = content;
         text.fontSize = size;
         text.color = color;
-        text.fontStyle = style;
         text.alignment = alignment;
         text.horizontalOverflow = HorizontalWrapMode.Wrap;
         text.verticalOverflow = VerticalWrapMode.Overflow;
         text.raycastTarget = false;
+        text.lineSpacing = 1.05f;
+        PixelFont.Apply(text);
         return text;
     }
 
     Button CreateButton(Transform parent, string label, UnityEngine.Events.UnityAction onClick)
     {
         Image image = CreateImage(parent, Color.white, "PlayButton");
+        PixelFont.ButtonFace(image);
         Button button = image.gameObject.AddComponent<Button>();
         button.targetGraphic = image;
         button.onClick.AddListener(onClick);
 
         ColorBlock colors = button.colors;
-        colors.normalColor = Ink;
-        colors.highlightedColor = new Color(0.18f, 0.18f, 0.18f, 1f);
-        colors.pressedColor = new Color(0.08f, 0.08f, 0.08f, 1f);
-        colors.selectedColor = Ink;
-        colors.fadeDuration = 0.08f;
+        colors.normalColor = Color.white;
+        colors.highlightedColor = new Color(1f, 0.92f, 0.55f, 1f);
+        colors.pressedColor = new Color(0.75f, 0.58f, 0.1f, 1f);
+        colors.selectedColor = Color.white;
+        colors.fadeDuration = 0.05f;
         button.colors = colors;
 
         Navigation navigation = button.navigation;
         navigation.mode = Navigation.Mode.None;
         button.navigation = navigation;
 
-        Text text = CreateText(image.transform, label, 28, Color.white, FontStyle.Bold, TextAnchor.MiddleCenter);
+        Text text = CreateText(image.transform, label, 24, Ink, TextAnchor.MiddleCenter);
         Stretch(text.rectTransform);
         return button;
+    }
+
+    static void AddHardShadow(Text text)
+    {
+        Shadow shadow = text.gameObject.AddComponent<Shadow>();
+        shadow.effectColor = new Color(0.05f, 0.02f, 0.08f, 1f);
+        shadow.effectDistance = new Vector2(4f, -4f);
     }
 
     static void Place(RectTransform rect, Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPosition, Vector2 size)

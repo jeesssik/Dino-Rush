@@ -7,11 +7,15 @@ public static class GameSprites
     static Sprite orb;
     static Sprite ring;
     static Sprite cloud;
+    static Sprite frame;
+    static Sprite button;
 
     public static Sprite Star => star != null ? star : (star = MakeStar());
     public static Sprite Orb => orb != null ? orb : (orb = MakeOrb());
     public static Sprite Ring => ring != null ? ring : (ring = MakeRing());
     public static Sprite Cloud => cloud != null ? cloud : (cloud = MakeCloud());
+    public static Sprite Frame => frame != null ? frame : (frame = MakeFrame());
+    public static Sprite Button => button != null ? button : (button = MakeButton());
 
     static Sprite MakeStar()
     {
@@ -138,6 +142,57 @@ public static class GameSprites
         return Finish(tex, 24f);
     }
 
+    static Sprite MakeFrame()
+    {
+        const int size = 48;
+        Texture2D tex = NewTexture(size);
+        Color edge = new Color(0.04f, 0.03f, 0.07f, 1f);
+        Color gold = new Color(1f, 0.78f, 0.16f, 1f);
+        Color fill = new Color(0.14f, 0.10f, 0.22f, 1f);
+
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                int edgeDistance = Mathf.Min(Mathf.Min(x, y), Mathf.Min(size - 1 - x, size - 1 - y));
+                Color color = fill;
+                if (edgeDistance <= 1)
+                    color = edge;
+                else if (edgeDistance <= 3)
+                    color = gold;
+                else if (edgeDistance == 4)
+                    color = edge;
+
+                tex.SetPixel(x, y, color);
+            }
+        }
+
+        return FinishBorder(tex, 8f);
+    }
+
+    static Sprite MakeButton()
+    {
+        const int size = 32;
+        Texture2D tex = NewTexture(size);
+        Color edge = new Color(0.08f, 0.05f, 0.02f, 1f);
+        Color gold = new Color(1f, 0.78f, 0.12f, 1f);
+        Color shine = new Color(1f, 0.92f, 0.45f, 1f);
+
+        for (int y = 0; y < size; y++)
+        {
+            for (int x = 0; x < size; x++)
+            {
+                int edgeDistance = Mathf.Min(Mathf.Min(x, y), Mathf.Min(size - 1 - x, size - 1 - y));
+                Color color = y > size - 8 ? shine : gold;
+                if (edgeDistance <= 1)
+                    color = edge;
+                tex.SetPixel(x, y, color);
+            }
+        }
+
+        return FinishBorder(tex, 5f);
+    }
+
     static Texture2D NewTexture(int size)
     {
         Texture2D tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
@@ -150,5 +205,18 @@ public static class GameSprites
     {
         tex.Apply();
         return Sprite.Create(tex, new Rect(0f, 0f, tex.width, tex.height), new Vector2(0.5f, 0.5f), pixelsPerUnit);
+    }
+
+    static Sprite FinishBorder(Texture2D tex, float border)
+    {
+        tex.Apply();
+        return Sprite.Create(
+            tex,
+            new Rect(0f, 0f, tex.width, tex.height),
+            new Vector2(0.5f, 0.5f),
+            100f,
+            0,
+            SpriteMeshType.FullRect,
+            new Vector4(border, border, border, border));
     }
 }
