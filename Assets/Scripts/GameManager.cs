@@ -484,12 +484,12 @@ public class GameManager : MonoBehaviour
         TextMesh mesh = go.AddComponent<TextMesh>();
         mesh.text = message;
         mesh.font = PixelFont.Get();
-        mesh.fontSize = 48;
-        mesh.characterSize = 0.12f;
+        mesh.fontSize = 96;
+        mesh.characterSize = 0.22f;
         mesh.anchor = TextAnchor.MiddleCenter;
         mesh.alignment = TextAlignment.Center;
         mesh.color = color;
-        PixelFont.Prepare(message, 48);
+        PixelFont.Prepare(message, 96);
         MeshRenderer renderer = go.GetComponent<MeshRenderer>();
         renderer.sortingOrder = 30;
         if (font != null && font.material != null)
@@ -534,31 +534,31 @@ public class GameManager : MonoBehaviour
     {
         hudCanvas = CreateCanvas("HUDCanvas", 20);
         Canvas canvas = hudCanvas;
-        scoreValueText = CreateText(canvas.transform, "00000", 42, Ink, FontStyle.Bold, TextAnchor.UpperRight);
-        Place(scoreValueText.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-32f, -46f), new Vector2(220f, 52f));
+        scoreValueText = CreateText(canvas.transform, "00000", 84, Ink, FontStyle.Bold, TextAnchor.UpperRight);
+        Place(scoreValueText.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-36f, -70f), new Vector2(360f, 100f));
 
-        Text scoreLabel = CreateText(canvas.transform, "PUNTOS", 18, Muted, FontStyle.Bold, TextAnchor.UpperRight);
-        Place(scoreLabel.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-32f, -18f), new Vector2(220f, 28f));
+        Text scoreLabel = CreateText(canvas.transform, "PUNTOS", 36, Muted, FontStyle.Bold, TextAnchor.UpperRight);
+        Place(scoreLabel.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-36f, -18f), new Vector2(360f, 48f));
 
-        recordValueText = CreateText(canvas.transform, "00000", 42, Muted, FontStyle.Bold, TextAnchor.UpperRight);
-        Place(recordValueText.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-250f, -46f), new Vector2(220f, 52f));
+        recordValueText = CreateText(canvas.transform, "00000", 84, Muted, FontStyle.Bold, TextAnchor.UpperRight);
+        Place(recordValueText.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-420f, -70f), new Vector2(360f, 100f));
 
-        Text recordLabel = CreateText(canvas.transform, "RÉCORD", 18, Muted, FontStyle.Bold, TextAnchor.UpperRight);
-        Place(recordLabel.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-250f, -18f), new Vector2(220f, 28f));
+        Text recordLabel = CreateText(canvas.transform, "RÉCORD", 36, Muted, FontStyle.Bold, TextAnchor.UpperRight);
+        Place(recordLabel.rectTransform, new Vector2(1f, 1f), new Vector2(1f, 1f), new Vector2(-420f, -18f), new Vector2(360f, 48f));
 
-        Text title = CreateText(canvas.transform, "DINO RUSH", 26, Ink, FontStyle.Bold, TextAnchor.UpperLeft);
-        Place(title.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(32f, -18f), new Vector2(360f, 36f));
+        Text title = CreateText(canvas.transform, "DINO RUSH", 56, Ink, FontStyle.Bold, TextAnchor.UpperLeft);
+        Place(title.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(36f, -18f), new Vector2(520f, 70f));
 
-        Text hint = CreateText(canvas.transform, "ESPACIO salta    ·    ESPACIO en el aire: doble salto    ·    juntá estrellas", 18, Muted, FontStyle.Normal, TextAnchor.UpperLeft);
-        Place(hint.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(32f, -56f), new Vector2(980f, 30f));
+        Text hint = CreateText(canvas.transform, "ESPACIO salta    ·    ESPACIO en el aire: doble salto    ·    juntá estrellas", 32, Muted, FontStyle.Normal, TextAnchor.UpperLeft);
+        Place(hint.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(36f, -96f), new Vector2(1200f, 48f));
         hintGroup = hint.gameObject.AddComponent<CanvasGroup>();
 
-        shieldText = CreateText(canvas.transform, "ESCUDO LISTO", 20, Cyan, FontStyle.Bold, TextAnchor.UpperLeft);
-        Place(shieldText.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(32f, -96f), new Vector2(320f, 30f));
+        shieldText = CreateText(canvas.transform, "ESCUDO LISTO", 36, Cyan, FontStyle.Bold, TextAnchor.UpperLeft);
+        Place(shieldText.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(36f, -156f), new Vector2(480f, 52f));
         shieldText.gameObject.SetActive(false);
 
-        bannerText = CreateText(canvas.transform, "", 48, Gold, FontStyle.Bold, TextAnchor.MiddleCenter);
-        Place(bannerText.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 180f), new Vector2(900f, 80f));
+        bannerText = CreateText(canvas.transform, "", 84, Gold, FontStyle.Bold, TextAnchor.MiddleCenter);
+        Place(bannerText.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 160f), new Vector2(1200f, 120f));
 
         flashImage = CreateImage(canvas.transform, new Color(1f, 1f, 1f, 0f), "Flash");
         Stretch(flashImage.rectTransform);
@@ -574,48 +574,48 @@ public class GameManager : MonoBehaviour
         Stretch(overlay.rectTransform);
 
         Image panel = CreateImage(canvas.transform, Color.white, "Panel");
-        Place(panel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(760f, 560f));
+        Place(panel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), Vector2.zero, new Vector2(1100f, 820f));
         PixelFont.Frame(panel);
         gameOverPanel = panel.rectTransform;
 
-        Text title = CreateText(panel.transform, "GAME OVER", 56, new Color(1f, 0.42f, 0.28f, 1f), FontStyle.Normal, TextAnchor.MiddleCenter);
-        Place(title.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 196f), new Vector2(680f, 78f));
+        Text title = CreateText(panel.transform, "GAME OVER", 110, new Color(1f, 0.42f, 0.28f, 1f), FontStyle.Normal, TextAnchor.MiddleCenter);
+        Place(title.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 290f), new Vector2(980f, 140f));
         AddHardShadow(title);
 
-        gameOverHeadline = CreateText(panel.transform, "", 24, Gold, FontStyle.Normal, TextAnchor.MiddleCenter);
-        Place(gameOverHeadline.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 132f), new Vector2(680f, 40f));
+        gameOverHeadline = CreateText(panel.transform, "", 48, Gold, FontStyle.Normal, TextAnchor.MiddleCenter);
+        Place(gameOverHeadline.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 190f), new Vector2(960f, 70f));
 
         Image pointsBox = CreateImage(panel.transform, new Color(0.07f, 0.05f, 0.12f, 1f), "PointsBox");
-        Place(pointsBox.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-160f, 42f), new Vector2(250f, 120f));
+        Place(pointsBox.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-230f, 50f), new Vector2(380f, 180f));
         Image recordBox = CreateImage(panel.transform, new Color(0.07f, 0.05f, 0.12f, 1f), "RecordBox");
-        Place(recordBox.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(160f, 42f), new Vector2(250f, 120f));
+        Place(recordBox.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(230f, 50f), new Vector2(380f, 180f));
 
-        Text pointsLabel = CreateText(panel.transform, "PUNTOS", 18, Gold, FontStyle.Normal, TextAnchor.MiddleCenter);
-        Place(pointsLabel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-160f, 72f), new Vector2(220f, 30f));
+        Text pointsLabel = CreateText(panel.transform, "PUNTOS", 36, Gold, FontStyle.Normal, TextAnchor.MiddleCenter);
+        Place(pointsLabel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-230f, 90f), new Vector2(340f, 52f));
 
-        gameOverScore = CreateText(panel.transform, "00000", 40, Bone, FontStyle.Normal, TextAnchor.MiddleCenter);
-        Place(gameOverScore.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-160f, 22f), new Vector2(230f, 56f));
+        gameOverScore = CreateText(panel.transform, "00000", 72, Bone, FontStyle.Normal, TextAnchor.MiddleCenter);
+        Place(gameOverScore.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(-230f, 20f), new Vector2(340f, 90f));
 
-        Text recordLabel = CreateText(panel.transform, "RÉCORD", 18, Gold, FontStyle.Normal, TextAnchor.MiddleCenter);
-        Place(recordLabel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(160f, 72f), new Vector2(220f, 30f));
+        Text recordLabel = CreateText(panel.transform, "RÉCORD", 36, Gold, FontStyle.Normal, TextAnchor.MiddleCenter);
+        Place(recordLabel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(230f, 90f), new Vector2(340f, 52f));
 
-        gameOverRecord = CreateText(panel.transform, "00000", 40, Bone, FontStyle.Normal, TextAnchor.MiddleCenter);
-        Place(gameOverRecord.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(160f, 22f), new Vector2(230f, 56f));
+        gameOverRecord = CreateText(panel.transform, "00000", 72, Bone, FontStyle.Normal, TextAnchor.MiddleCenter);
+        Place(gameOverRecord.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(230f, 20f), new Vector2(340f, 90f));
 
         Text help = CreateText(
             panel.transform,
             "ESPACIO salta. En el aire, otra vez: doble salto.\nEstrellas +100    orbe azul: escudo    pasar cerca suma.",
-            16,
+            32,
             Bone,
             FontStyle.Normal,
             TextAnchor.MiddleCenter);
-        Place(help.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -70f), new Vector2(680f, 70f));
+        Place(help.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -120f), new Vector2(980f, 110f));
 
         Button button = CreateButton(panel.transform, "REINTENTAR", Restart);
-        Place(button.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -168f), new Vector2(360f, 72f));
+        Place(button.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -240f), new Vector2(520f, 100f));
 
-        Text spaceHint = CreateText(panel.transform, "o apretá ESPACIO", 16, Gold, FontStyle.Normal, TextAnchor.MiddleCenter);
-        Place(spaceHint.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -230f), new Vector2(420f, 32f));
+        Text spaceHint = CreateText(panel.transform, "o apretá ESPACIO", 32, Gold, FontStyle.Normal, TextAnchor.MiddleCenter);
+        Place(spaceHint.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -350f), new Vector2(640f, 52f));
 
         gameOverCanvas.SetActive(false);
     }
@@ -691,7 +691,7 @@ public class GameManager : MonoBehaviour
         navigation.mode = Navigation.Mode.None;
         button.navigation = navigation;
 
-        Text text = CreateText(image.transform, label, 24, new Color(0.12f, 0.07f, 0.16f, 1f), FontStyle.Normal, TextAnchor.MiddleCenter);
+        Text text = CreateText(image.transform, label, 48, new Color(0.12f, 0.07f, 0.16f, 1f), FontStyle.Normal, TextAnchor.MiddleCenter);
         Stretch(text.rectTransform);
         return button;
     }
