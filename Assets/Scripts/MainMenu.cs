@@ -36,13 +36,13 @@ public class MainMenu : MonoBehaviour
         float time = Time.unscaledTime;
         if (starIcon != null)
         {
-            starIcon.rectTransform.anchoredPosition = starBase + new Vector2(0f, Mathf.Sin(time * 2.2f) * 10f);
+            starIcon.rectTransform.anchoredPosition = starBase + new Vector2(0f, Mathf.Sin(time * 2.2f) * 6f);
             starIcon.rectTransform.Rotate(0f, 0f, -24f * Time.unscaledDeltaTime);
         }
 
         if (orbIcon != null)
         {
-            orbIcon.rectTransform.anchoredPosition = orbBase + new Vector2(0f, Mathf.Sin(time * 2.2f + 1.4f) * 10f);
+            orbIcon.rectTransform.anchoredPosition = orbBase + new Vector2(0f, Mathf.Sin(time * 2.2f + 1.4f) * 6f);
             orbIcon.rectTransform.Rotate(0f, 0f, 18f * Time.unscaledDeltaTime);
         }
 
@@ -100,41 +100,41 @@ public class MainMenu : MonoBehaviour
         Stretch(overlay.rectTransform);
 
         Image panel = CreateImage(canvas.transform, Color.white, "Panel");
-        Place(panel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(40f, 0f), new Vector2(1100f, 980f));
+        Place(panel.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(12f, 0f), new Vector2(840f, 624f));
         PixelFont.Frame(panel);
 
-        Text kicker = CreateText(panel.transform, "LISTO PARA CORRER", 42, Gold, TextAnchor.MiddleCenter);
-        Place(kicker.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 400f), new Vector2(980f, 64f));
+        Text kicker = CreateText(panel.transform, "LISTO PARA CORRER", 60, Gold, TextAnchor.MiddleCenter);
+        Place(kicker.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 258f), new Vector2(768f, 54f));
 
-        Text title = CreateText(panel.transform, "DINO RUSH", 120, Gold, TextAnchor.MiddleCenter);
-        Place(title.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 290f), new Vector2(860f, 150f));
+        Text title = CreateText(panel.transform, "DINO RUSH", 156, Gold, TextAnchor.MiddleCenter);
+        Place(title.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 174f), new Vector2(720f, 114f));
         titleRect = title.rectTransform;
         AddHardShadow(title);
 
-        starIcon = CreateIcon(panel.transform, GameSprites.Star, new Vector2(-440f, 290f));
-        orbIcon = CreateIcon(panel.transform, GameSprites.Orb, new Vector2(440f, 290f));
+        starIcon = CreateIcon(panel.transform, GameSprites.Star, new Vector2(-336f, 186f));
+        orbIcon = CreateIcon(panel.transform, GameSprites.Orb, new Vector2(336f, 186f));
 
-        Text lead = CreateText(panel.transform, "El desierto no frena. Vos tampoco.", 48, Bone, TextAnchor.MiddleCenter);
-        Place(lead.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 160f), new Vector2(1000f, 72f));
+        Text lead = CreateText(panel.transform, "El desierto no frena. Vos tampoco.", 72, Bone, TextAnchor.MiddleCenter);
+        Place(lead.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 90f), new Vector2(780f, 60f));
 
         Text story = CreateText(
             panel.transform,
             "Un dinosaurio sale a correr y el suelo no para.\nLos cactus crecen en el camino y los pterodáctilos cruzan el cielo.\nLlegá más lejos que tu propio récord.",
-            36,
+            60,
             Bone,
             TextAnchor.MiddleCenter);
-        Place(story.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 30f), new Vector2(1000f, 170f));
+        Place(story.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 18f), new Vector2(768f, 114f));
 
-        Text how = CreateText(panel.transform, "CÓMO SE JUEGA", 40, Gold, TextAnchor.MiddleCenter);
-        Place(how.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -80f), new Vector2(980f, 60f));
+        Text how = CreateText(panel.transform, "CÓMO SE JUEGA", 60, Gold, TextAnchor.MiddleCenter);
+        Place(how.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -54f), new Vector2(720f, 48f));
 
         Text controls = CreateText(
             panel.transform,
             "ESPACIO salta. En el aire, ESPACIO otra vez: doble salto.\nEstrellas: +100 puntos.    Orbe azul: un escudo.\nPasar muy cerca de un obstáculo también suma.",
-            34,
+            54,
             Bone,
             TextAnchor.MiddleCenter);
-        Place(controls.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -190f), new Vector2(1000f, 160f));
+        Place(controls.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -126f), new Vector2(768f, 102f));
         starBase = starIcon.rectTransform.anchoredPosition;
         orbBase = orbIcon.rectTransform.anchoredPosition;
 
@@ -142,8 +142,8 @@ public class MainMenu : MonoBehaviour
         string recordLine = record > 0
             ? "TU RÉCORD  " + record.ToString("D5")
             : "TODAVÍA NO HAY RÉCORD";
-        Text recordText = CreateText(panel.transform, recordLine, 36, Gold, TextAnchor.MiddleCenter);
-        Place(recordText.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -300f), new Vector2(980f, 56f));
+        Text recordText = CreateText(panel.transform, recordLine, 54, Gold, TextAnchor.MiddleCenter);
+        Place(recordText.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -198f), new Vector2(720f, 43f));
 
         Button button = CreateButton(panel.transform, "JUGAR", () =>
         {
@@ -151,10 +151,10 @@ public class MainMenu : MonoBehaviour
                 GameManager.Instance.StartRun();
         });
         buttonRect = button.GetComponent<RectTransform>();
-        Place(buttonRect, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -390f), new Vector2(460f, 100f));
+        Place(buttonRect, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -252f), new Vector2(336f, 72f));
 
-        spaceHint = CreateText(panel.transform, "APRETÁ ESPACIO", 36, Gold, TextAnchor.MiddleCenter);
-        Place(spaceHint.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -455f), new Vector2(700f, 56f));
+        spaceHint = CreateText(panel.transform, "APRETÁ ESPACIO", 54, Gold, TextAnchor.MiddleCenter);
+        Place(spaceHint.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -294f), new Vector2(540f, 43f));
     }
 
     Image CreateIcon(Transform parent, Sprite sprite, Vector2 position)
@@ -162,7 +162,7 @@ public class MainMenu : MonoBehaviour
         Image image = CreateImage(parent, Color.white, "Icon");
         image.sprite = sprite;
         image.preserveAspect = true;
-        Place(image.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), position, new Vector2(84f, 84f));
+        Place(image.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), position, new Vector2(66f, 66f));
         return image;
     }
 
@@ -229,7 +229,7 @@ public class MainMenu : MonoBehaviour
         navigation.mode = Navigation.Mode.None;
         button.navigation = navigation;
 
-        Text text = CreateText(image.transform, label, 48, Ink, TextAnchor.MiddleCenter);
+        Text text = CreateText(image.transform, label, 66, Ink, TextAnchor.MiddleCenter);
         Stretch(text.rectTransform);
         return button;
     }

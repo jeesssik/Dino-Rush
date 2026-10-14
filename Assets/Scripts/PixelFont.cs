@@ -52,7 +52,7 @@ public static class PixelFont
         image.color = Color.white;
         Shadow shadow = image.gameObject.AddComponent<Shadow>();
         shadow.effectColor = new Color(0f, 0f, 0f, 0.8f);
-        shadow.effectDistance = new Vector2(8f, -8f);
+        shadow.effectDistance = new Vector2(5f, -5f);
     }
 
     public static void ButtonFace(Image image)
@@ -65,6 +65,6 @@ public static class PixelFont
         image.color = Color.white;
         Shadow shadow = image.gameObject.AddComponent<Shadow>();
         shadow.effectColor = new Color(0.05f, 0.03f, 0.08f, 1f);
-        shadow.effectDistance = new Vector2(5f, -5f);
+        shadow.effectDistance = new Vector2(3f, -3f);
     }
 }
