@@ -12,6 +12,7 @@ public class MainMenu : MonoBehaviour
     GameObject canvasObject;
     Font font;
     RectTransform titleRect;
+    Text titleText;
     RectTransform buttonRect;
     Image starIcon;
     Image orbIcon;
@@ -38,13 +39,19 @@ public class MainMenu : MonoBehaviour
         {
             starIcon.rectTransform.anchoredPosition = starBase + new Vector2(0f, Mathf.Sin(time * 2.2f) * 6f);
             starIcon.rectTransform.Rotate(0f, 0f, -24f * Time.unscaledDeltaTime);
+            starIcon.color = Color.HSVToRGB(Mathf.Repeat(time * 0.55f, 1f), 0.75f, 1f);
         }
 
         if (orbIcon != null)
         {
             orbIcon.rectTransform.anchoredPosition = orbBase + new Vector2(0f, Mathf.Sin(time * 2.2f + 1.4f) * 6f);
             orbIcon.rectTransform.Rotate(0f, 0f, 18f * Time.unscaledDeltaTime);
+            Color orb = Color.HSVToRGB(Mathf.Repeat(time * 0.4f + 0.35f, 1f), 0.55f, 1f);
+            orbIcon.color = orb;
         }
+
+        if (titleText != null)
+            titleText.color = Color.HSVToRGB(Mathf.Repeat(time * 0.35f, 1f), 0.8f, 1f);
 
         if (buttonRect != null)
         {
@@ -109,6 +116,7 @@ public class MainMenu : MonoBehaviour
         Text title = CreateText(panel.transform, "DINO RUSH", 156, Gold, TextAnchor.MiddleCenter);
         Place(title.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 174f), new Vector2(720f, 114f));
         titleRect = title.rectTransform;
+        titleText = title;
         AddHardShadow(title);
 
         starIcon = CreateIcon(panel.transform, GameSprites.Star, new Vector2(-336f, 186f));

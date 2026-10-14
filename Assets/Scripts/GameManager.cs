@@ -48,6 +48,7 @@ public class GameManager : MonoBehaviour
     Text recordValueText;
     Text shieldText;
     Text bannerText;
+    Text hudTitleText;
     CanvasGroup hintGroup;
     Image flashImage;
     GameObject gameOverCanvas;
@@ -95,6 +96,7 @@ public class GameManager : MonoBehaviour
         }
 
         popupRoot = new GameObject("Popups").transform;
+        PsychedelicFX.Ensure(transform);
         BuildHud();
         if (hudCanvas != null)
             hudCanvas.gameObject.SetActive(false);
@@ -104,6 +106,16 @@ public class GameManager : MonoBehaviour
         GameSprites.Star.ToString();
         RefreshHud();
         mainMenu = gameObject.AddComponent<MainMenu>();
+        StartCoroutine(BindDinosaurFx());
+    }
+
+    IEnumerator BindDinosaurFx()
+    {
+        // El dino vive en la escena; esperamos un frame por si aún no despertó.
+        yield return null;
+        Dinosaur dinosaur = FindObjectOfType<Dinosaur>();
+        if (dinosaur != null && PsychedelicFX.Instance != null)
+            PsychedelicFX.Instance.BindDinosaur(dinosaur.transform);
     }
 
     void OnDestroy()
@@ -158,6 +170,16 @@ public class GameManager : MonoBehaviour
             hudCanvas.gameObject.SetActive(true);
         if (mainMenu != null)
             mainMenu.Close();
+        if (PsychedelicFX.Instance != null)
+        {
+            PsychedelicFX.Instance.Flash(new Color(1f, 0.4f, 0.95f, 1f), 0.35f, 0.35f);
+            Dinosaur dino = FindObjectOfType<Dinosaur>();
+            if (dino != null)
+            {
+                PsychedelicFX.Instance.BindDinosaur(dino.transform);
+                PsychedelicFX.Instance.RainbowBurst(dino.transform.position + Vector3.up * 0.5f, 16);
+            }
+        }
         StartCoroutine(FadeHint());
     }
 
@@ -168,12 +190,24 @@ public class GameManager : MonoBehaviour
 
         score += points;
         scorePunch = 1f;
-        SpawnPopup(label, worldPosition, Gold);
+        Color popupColor = points >= 100
+            ? Color.HSVToRGB(Mathf.Repeat(Time.time * 0.7f, 1f), 0.85f, 1f)
+            : Gold;
+        SpawnPopup(label, worldPosition, popupColor);
+        if (PsychedelicFX.Instance != null)
+        {
+            if (label.Contains("CERCA"))
+                PsychedelicFX.Instance.NearMissZap(worldPosition);
+            else
+                PsychedelicFX.Instance.CollectPulse(worldPosition, popupColor);
+        }
     }
 
     public void CollectStar(Vector3 worldPosition)
     {
         AddBonus(100, worldPosition, "+100");
+        if (PsychedelicFX.Instance != null)
+            PsychedelicFX.Instance.RainbowBurst(worldPosition, 20);
     }
 
     public void CollectShield(Vector3 worldPosition)
@@ -190,6 +224,8 @@ public class GameManager : MonoBehaviour
         HasShield = true;
         SpawnPopup("ESCUDO", worldPosition, Cyan);
         RefreshShieldLabel();
+        if (PsychedelicFX.Instance != null)
+            PsychedelicFX.Instance.CollectPulse(worldPosition, Cyan);
     }
 
     public bool TryConsumeHit(Vector3 worldPosition)
@@ -206,6 +242,11 @@ public class GameManager : MonoBehaviour
         RefreshShieldLabel();
         SpawnPopup("¡BLOQUEADO!", worldPosition, Cyan);
         Shake(0.12f, 0.16f);
+        if (PsychedelicFX.Instance != null)
+        {
+            PsychedelicFX.Instance.Burst(worldPosition, Cyan, 18, 5f);
+            PsychedelicFX.Instance.Flash(Cyan, 0.4f, 0.28f);
+        }
         return true;
     }
 
@@ -226,6 +267,9 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetInt(HighScoreKey, highScore);
             PlayerPrefs.Save();
         }
+
+        if (PsychedelicFX.Instance != null)
+            PsychedelicFX.Instance.DeathFlash();
 
         RefreshHud();
         StartCoroutine(GameOverSequence(finalScore, isRecord));
@@ -264,6 +308,9 @@ public class GameManager : MonoBehaviour
         canRestart = false;
         shakeTime = 0f;
 
+        if (PsychedelicFX.Instance != null)
+            PsychedelicFX.Instance.Clear();
+
         if (cam != null)
             cam.transform.position = cameraOrigin;
         if (flashImage != null)
@@ -280,7 +327,11 @@ public class GameManager : MonoBehaviour
 
         Dinosaur dinosaur = FindObjectOfType<Dinosaur>();
         if (dinosaur != null)
+        {
             dinosaur.Revive();
+            if (PsychedelicFX.Instance != null)
+                PsychedelicFX.Instance.BindDinosaur(dinosaur.transform);
+        }
 
         IsPlaying = true;
         restarting = false;
@@ -295,8 +346,10 @@ public class GameManager : MonoBehaviour
         {
             elapsed += Time.unscaledDeltaTime;
             float flash = elapsed < 0.08f ? elapsed / 0.08f : 1f - ((elapsed - 0.08f) / 0.4f);
+            float amount = Mathf.Clamp01(flash) * 0.8f;
+            Color death = Color.HSVToRGB(Mathf.Repeat(elapsed * 2.5f, 1f), 0.85f, 1f);
             if (flashImage != null)
-                flashImage.color = new Color(1f, 1f, 1f, Mathf.Clamp01(flash) * 0.8f);
+                flashImage.color = new Color(death.r, death.g, death.b, amount);
             yield return null;
         }
 
@@ -341,19 +394,23 @@ public class GameManager : MonoBehaviour
         if (bannerRoutine != null)
             StopCoroutine(bannerRoutine);
         bannerRoutine = StartCoroutine(BannerRoutine());
+        Shake(0.1f, 0.22f);
+        if (PsychedelicFX.Instance != null)
+            PsychedelicFX.Instance.MilestonePulse();
     }
 
     IEnumerator BannerRoutine()
     {
-        Color color = Gold;
         float t = 0f;
         while (t < 1.15f)
         {
             t += Time.deltaTime;
             float alpha = t < 0.15f ? t / 0.15f : 1f - Mathf.Clamp01((t - 0.55f) / 0.6f);
+            Color color = Color.HSVToRGB(Mathf.Repeat(Time.time * 1.8f, 1f), 0.85f, 1f);
             color.a = Mathf.Clamp01(alpha);
             bannerText.color = color;
-            bannerText.rectTransform.localScale = Vector3.one * Mathf.Lerp(0.85f, 1f, Mathf.Clamp01(t / 0.2f));
+            float pulse = 1f + 0.08f * Mathf.Sin(t * 18f);
+            bannerText.rectTransform.localScale = Vector3.one * (Mathf.Lerp(0.85f, 1f, Mathf.Clamp01(t / 0.2f)) * pulse);
             yield return null;
         }
 
@@ -385,13 +442,18 @@ public class GameManager : MonoBehaviour
         {
             scoreValueText.text = shownScore.ToString("D5");
             bool beatingRecord = highScore > 0 && shownScore > highScore;
-            scoreValueText.color = beatingRecord ? Gold : Ink;
+            scoreValueText.color = beatingRecord
+                ? Color.HSVToRGB(Mathf.Repeat(Time.time * 1.5f, 1f), 0.85f, 1f)
+                : Ink;
             float punch = 1f + scorePunch * 0.16f;
             scoreValueText.rectTransform.localScale = new Vector3(punch, punch, 1f);
         }
 
         if (recordValueText != null)
             recordValueText.text = highScore.ToString("D5");
+
+        if (hudTitleText != null && IsPlaying)
+            hudTitleText.color = Color.HSVToRGB(Mathf.Repeat(Time.time * 0.45f, 1f), 0.7f, 0.95f);
     }
 
     void RefreshShieldLabel()
@@ -409,7 +471,11 @@ public class GameManager : MonoBehaviour
         Color sky = cycle < 1f
             ? Color.Lerp(dayColor, sunsetColor, cycle)
             : Color.Lerp(sunsetColor, duskColor, cycle - 1f);
-        cam.backgroundColor = sky;
+
+        // Cielo neón que se intensifica con la velocidad.
+        Color neon = PsychedelicFX.NeonSky(score, SpeedMultiplier);
+        float trip = IsPlaying ? Mathf.Clamp01((SpeedMultiplier - 1f) / 1.15f) : (InMenu ? 0.35f : 0.15f);
+        cam.backgroundColor = Color.Lerp(sky, neon, 0.45f + trip * 0.5f);
     }
 
     public void Shake(float amount, float duration)
@@ -441,7 +507,9 @@ public class GameManager : MonoBehaviour
             GameObject cloud = new GameObject("Cloud");
             SpriteRenderer renderer = cloud.AddComponent<SpriteRenderer>();
             renderer.sprite = GameSprites.Cloud;
-            renderer.color = new Color(1f, 1f, 1f, 0.92f);
+            Color tint = Color.HSVToRGB(Random.Range(0f, 1f), 0.35f, 1f);
+            tint.a = 0.88f;
+            renderer.color = tint;
             renderer.sortingOrder = -8;
             float scale = Random.Range(0.85f, 1.7f);
             cloud.transform.localScale = new Vector3(scale, scale * Random.Range(0.75f, 1f), 1f);
@@ -466,6 +534,24 @@ public class GameManager : MonoBehaviour
             {
                 position.x = 16f + Random.Range(0f, 3f);
                 position.y = Random.Range(4.6f, 7.4f);
+                SpriteRenderer renderer = clouds[i].GetComponent<SpriteRenderer>();
+                if (renderer != null)
+                {
+                    Color tint = Color.HSVToRGB(Random.Range(0f, 1f), 0.4f, 1f);
+                    tint.a = 0.88f;
+                    renderer.color = tint;
+                }
+            }
+
+            SpriteRenderer cloudRenderer = clouds[i].GetComponent<SpriteRenderer>();
+            if (cloudRenderer != null)
+            {
+                Color c = cloudRenderer.color;
+                Color.RGBToHSV(c, out float h, out float s, out float v);
+                h = Mathf.Repeat(h + Time.deltaTime * 0.08f, 1f);
+                Color shifted = Color.HSVToRGB(h, Mathf.Max(s, 0.3f), v);
+                shifted.a = c.a;
+                cloudRenderer.color = shifted;
             }
 
             clouds[i].position = position;
@@ -504,15 +590,17 @@ public class GameManager : MonoBehaviour
             yield break;
 
         Vector3 start = mesh.transform.position;
-        Color color = mesh.color;
+        Color baseColor = mesh.color;
         float t = 0f;
         while (t < 0.75f && mesh != null)
         {
             t += Time.unscaledDeltaTime;
             float k = t / 0.75f;
             mesh.transform.position = start + Vector3.up * (k * 0.85f);
+            Color color = Color.HSVToRGB(Mathf.Repeat(baseColor.r * 0.2f + t * 1.6f, 1f), 0.8f, 1f);
             color.a = 1f - k;
             mesh.color = color;
+            mesh.transform.localScale = Vector3.one * (1f + 0.2f * Mathf.Sin(t * 22f) * (1f - k));
             yield return null;
         }
 
@@ -548,6 +636,7 @@ public class GameManager : MonoBehaviour
 
         Text title = CreateText(canvas.transform, "DINO RUSH", 78, Ink, FontStyle.Bold, TextAnchor.UpperLeft);
         Place(title.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(24f, -12f), new Vector2(420f, 60f));
+        hudTitleText = title;
 
         Text hint = CreateText(canvas.transform, "ESPACIO salta    ·    ESPACIO en el aire: doble salto    ·    juntá estrellas", 43, Muted, FontStyle.Normal, TextAnchor.UpperLeft);
         Place(hint.rectTransform, new Vector2(0f, 1f), new Vector2(0f, 1f), new Vector2(24f, -78f), new Vector2(840f, 42f));

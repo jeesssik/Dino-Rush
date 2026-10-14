@@ -29,6 +29,8 @@ public class Dinosaur : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         startPosition = transform.position;
         CreateShieldVisual();
+        if (PsychedelicFX.Instance != null)
+            PsychedelicFX.Instance.BindDinosaur(transform);
     }
 
     void Update()
@@ -107,6 +109,8 @@ public class Dinosaur : MonoBehaviour
         dinoRb.velocity = new Vector2(dinoRb.velocity.x, 0f);
         dinoRb.AddForce(Vector2.up * force);
         transform.localScale = new Vector3(0.84f, 1.16f, 1f);
+        if (PsychedelicFX.Instance != null)
+            PsychedelicFX.Instance.JumpTrail(transform.position);
     }
 
     void UpdateVisuals()
@@ -116,7 +120,14 @@ public class Dinosaur : MonoBehaviour
         {
             shieldVisual.enabled = shielded;
             if (shielded)
-                shieldVisual.transform.Rotate(0f, 0f, -80f * Time.deltaTime);
+            {
+                shieldVisual.transform.Rotate(0f, 0f, -140f * Time.deltaTime);
+                float pulse = 1.85f + Mathf.Sin(Time.time * 10f) * 0.12f;
+                shieldVisual.transform.localScale = Vector3.one * pulse;
+                Color ring = Color.HSVToRGB(Mathf.Repeat(Time.time * 0.9f, 1f), 0.7f, 1f);
+                ring.a = 0.95f;
+                shieldVisual.color = ring;
+            }
         }
 
         if (spriteRenderer == null || GameManager.Instance == null)
@@ -125,7 +136,15 @@ public class Dinosaur : MonoBehaviour
         if (GameManager.Instance.IsInvulnerable)
         {
             float alpha = Mathf.PingPong(Time.time * 16f, 1f) > 0.5f ? 0.35f : 1f;
-            spriteRenderer.color = new Color(1f, 1f, 1f, alpha);
+            Color flash = Color.HSVToRGB(Mathf.Repeat(Time.time * 4f, 1f), 0.85f, 1f);
+            flash.a = alpha;
+            spriteRenderer.color = flash;
+        }
+        else if (GameManager.Instance.IsPlaying && GameManager.Instance.SpeedMultiplier > 1.35f)
+        {
+            float trip = Mathf.Clamp01((GameManager.Instance.SpeedMultiplier - 1.35f) / 0.8f);
+            Color neon = Color.HSVToRGB(Mathf.Repeat(Time.time * 1.1f, 1f), 0.55f * trip, 1f);
+            spriteRenderer.color = Color.Lerp(Color.white, neon, trip * 0.65f);
         }
         else
         {
